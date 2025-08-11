@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lista de Compras</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🛒 Minhas Listas de Compras</h1>
+
+  <div class="listas">
+    <select id="listaSelecionada" onchange="trocarLista()">
+      <option value="default">Lista Principal</option>
+    </select>
+    <input type="text" id="novaLista" placeholder="Nova lista..." />
+    <button onclick="criarNovaLista()">➕ Criar Lista</button>
+  </div>
+
+  <div class="controles">
+    <input type="text" id="nomeItem" placeholder="Nome do item" />
+    <input type="number" id="qtdItem" placeholder="Quantidade" />
+    <button onclick="adicionarItem()">➕ Adicionar</button>
+  </div>
+
+  <div class="filtros">
+    <input type="text" id="busca" placeholder="🔍 Buscar item..." oninput="filtrarLista()" />
+    <select id="filtro" onchange="filtrarLista()">
+      <option value="todos">Todos</option>
+      <option value="pendentes">Pendentes</option>
+      <option value="comprados">Comprados</option>
+    </select>
+  </div>
+
+  <ul id="lista"></ul>
+
+  <div class="acoes">
+    <button onclick="compartilharLista()">📤 Compartilhar Lista</button>
+    <button onclick="exportarLista()">📄 Exportar como TXT</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
