@@ -5,9 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lista de Compras</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
 </head>
 <body>
   <h1>🛒 Minhas Listas de Compras</h1>
+
+  <div class="extras">
+    <button onclick="alternarTema()">🌓 Modo Escuro</button>
+    <button onclick="instalarApp()" id="btnInstalar" style="display:none;">📲 Instalar App</button>
+  </div>
 
   <div class="listas">
     <select id="listaSelecionada" onchange="trocarLista()">
@@ -30,7 +36,14 @@
       <option value="pendentes">Pendentes</option>
       <option value="comprados">Comprados</option>
     </select>
+    <select id="ordenarPor" onchange="filtrarLista()">
+      <option value="nome">Nome</option>
+      <option value="quantidade">Quantidade</option>
+      <option value="status">Status</option>
+    </select>
   </div>
+
+  <div id="estatisticas"></div>
 
   <ul id="lista"></ul>
 

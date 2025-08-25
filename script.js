@@ -1,10 +1,58 @@
+// 🌓 Tema escuro
+function alternarTema() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("tema", document.body.classList.contains("dark") ? "dark" : "light");
+}
+
+// 📲 Instalação como PWA
+let deferredPrompt;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("btnInstalar").style.display = "inline-block";
+});
+
+function instalarApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById("btnInstalar").style.display = "none";
+    });
+  }
+}
+
+// 🔄 Lista atual
 function getListaAtual() {
   return localStorage.getItem("listaAtual") || "default";
 }
 
+// 📊 Estatísticas
+function atualizarEstatisticas(lista) {
+  const total = lista.length;
+  const comprados = lista.filter(i => i.comprado).length;
+  const pendentes = total - comprados;
+  const porcentagem = total ? Math.round((comprados / total) * 100) : 0;
+  document.getElementById("estatisticas").textContent =
+    `Total: ${total} | Comprados: ${comprados} | Pendentes: ${pendentes} | ✅ ${porcentagem}%`;
+}
+
+// 🔀 Ordenação
+function ordenarLista(lista) {
+  const criterio = document.getElementById("ordenarPor").value;
+  return lista.sort((a, b) => {
+    if (criterio === "nome") return a.nome.localeCompare(b.nome);
+    if (criterio === "quantidade") return b.qtd - a.qtd;
+    if (criterio === "status") return a.comprado - b.comprado;
+  });
+}
+
+// 🧾 Renderizar lista
 function renderizarLista(listaFiltrada = null) {
   const nomeLista = getListaAtual();
-  const lista = listaFiltrada || JSON.parse(localStorage.getItem(nomeLista) || "[]");
+  let lista = listaFiltrada || JSON.parse(localStorage.getItem(nomeLista) || "[]");
+  lista = ordenarLista(lista);
+
   const ul = document.getElementById("lista");
   ul.innerHTML = "";
 
@@ -20,18 +68,25 @@ function renderizarLista(listaFiltrada = null) {
     const btnRemover = document.createElement("button");
     btnRemover.textContent = "🗑️";
     btnRemover.style.marginLeft = "10px";
-    btnRemover.onclick = () => removerItem(index);
+    btnRemover.onclick = () => {
+      if (confirm("Tem certeza que deseja remover este item?")) {
+        removerItem(index);
+      }
+    };
 
     li.appendChild(texto);
     li.appendChild(btnRemover);
     ul.appendChild(li);
   });
+
+  atualizarEstatisticas(lista);
 }
 
+// ➕ Adicionar item
 function adicionarItem() {
-  const nome = document.getElementById("nomeItem").value;
-  const qtd = document.getElementById("qtdItem").value;
-  if (!nome || !qtd) return;
+  const nome = document.getElementById("nomeItem").value.trim();
+  const qtd = parseInt(document.getElementById("qtdItem").value);
+  if (!nome || isNaN(qtd) || qtd <= 0) return;
 
   const nomeLista = getListaAtual();
   const lista = JSON.parse(localStorage.getItem(nomeLista) || "[]");
@@ -42,6 +97,7 @@ function adicionarItem() {
   renderizarLista();
 }
 
+// 🗑️ Remover item
 function removerItem(index) {
   const nomeLista = getListaAtual();
   const lista = JSON.parse(localStorage.getItem(nomeLista) || "[]");
@@ -50,6 +106,7 @@ function removerItem(index) {
   renderizarLista();
 }
 
+// ✅ Alternar status
 function alternarComprado(index) {
   const nomeLista = getListaAtual();
   const lista = JSON.parse(localStorage.getItem(nomeLista) || "[]");
@@ -58,13 +115,14 @@ function alternarComprado(index) {
   renderizarLista();
 }
 
+// 🔍 Filtrar lista
 function filtrarLista() {
   const busca = document.getElementById("busca").value.toLowerCase();
   const filtro = document.getElementById("filtro").value;
   const nomeLista = getListaAtual();
-  const lista = JSON.parse(localStorage.getItem(nomeLista) || "[]");
+  let lista = JSON.parse(localStorage.getItem(nomeLista) || "[]");
 
-  const filtrados = lista.filter(item => {
+  lista = lista.filter(item => {
     const nomeMatch = item.nome.toLowerCase().includes(busca);
     const statusMatch =
       filtro === "todos" ||
@@ -73,9 +131,11 @@ function filtrarLista() {
     return nomeMatch && statusMatch;
   });
 
-  renderizarLista(filtrados);
+  lista = ordenarLista(lista);
+  renderizarLista(lista);
 }
 
+// 📤 Compartilhar lista
 function compartilharLista() {
   const nomeLista = getListaAtual();
   const itens = JSON.parse(localStorage.getItem(nomeLista) || "[]");
@@ -101,6 +161,7 @@ function compartilharLista() {
   }
 }
 
+// 📄 Exportar lista
 function exportarLista() {
   const nomeLista = getListaAtual();
   const itens = JSON.parse(localStorage.getItem(nomeLista) || "[]");
@@ -125,6 +186,7 @@ function exportarLista() {
   URL.revokeObjectURL(url);
 }
 
+// 🆕 Criar nova lista
 function criarNovaLista() {
   const nome = document.getElementById("novaLista").value.trim();
   if (!nome) return;
@@ -142,13 +204,19 @@ function criarNovaLista() {
   renderizarLista();
 }
 
+// 🔁 Trocar lista
 function trocarLista() {
   const nome = document.getElementById("listaSelecionada").value;
   localStorage.setItem("listaAtual", nome);
   renderizarLista();
 }
 
+// 🚀 Inicialização
 window.onload = function () {
+  if (localStorage.getItem("tema") === "dark") {
+    document.body.classList.add("dark");
+  }
+
   const select = document.getElementById("listaSelecionada");
   for (let key in localStorage) {
     if (key !== "listaAtual" && typeof localStorage[key] === "string") {
