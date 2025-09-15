@@ -45,7 +45,7 @@ function renderizarLista(listaFiltrada = null) {
     if (item.estoque) li.classList.add("estoque");
 
     const texto = document.createElement("span");
-    texto.textContent = `${item.nome} (${item.qtd})`;
+    texto.textContent = `${item.nome} (${item.qtd} ${item.unidade})`;
     texto.onclick = () => alternarComprado(index);
     if (item.comprado) texto.style.textDecoration = "line-through";
 
@@ -81,15 +81,17 @@ function renderizarLista(listaFiltrada = null) {
 // ➕ Adicionar item
 function adicionarItem() {
   const nome = document.getElementById("nomeItem").value.trim();
-  const qtd = parseInt(document.getElementById("qtdItem").value);
+  const qtd = parseFloat(document.getElementById("qtdItem").value);
+  const unidade = document.getElementById("unidadeItem").value;
   if (!nome || isNaN(qtd) || qtd <= 0) return;
 
   const nomeLista = getListaAtual();
   const lista = JSON.parse(localStorage.getItem(nomeLista) || "[]");
-  lista.push({ nome, qtd, comprado: false, favorito: false, estoque: false });
+  lista.push({ nome, qtd, unidade, comprado: false, favorito: false, estoque: false });
   localStorage.setItem(nomeLista, JSON.stringify(lista));
   document.getElementById("nomeItem").value = "";
   document.getElementById("qtdItem").value = "";
+  document.getElementById("unidadeItem").value = "un";
   renderizarLista();
 }
 

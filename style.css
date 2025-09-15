@@ -41,7 +41,7 @@ select {
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 16px;
-  min-width: 120px;
+  min-width: 100px;
 }
 
 button {
@@ -73,8 +73,10 @@ li {
   border-radius: 8px;
   border: 1px solid #ddd;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 li span {
@@ -100,7 +102,8 @@ li.estoque {
 
 @media (max-width: 480px) {
   .controles,
-  .filtros {
+  .filtros,
+  .extras {
     flex-direction: column;
     align-items: stretch;
   }
@@ -109,5 +112,15 @@ li.estoque {
   select,
   button {
     width: 100%;
+    font-size: 16px;
+  }
+
+  li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  li button {
+    align-self: flex-end;
   }
 }
